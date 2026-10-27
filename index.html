@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAM Bank Interleaving Simulator | COA Mini Project</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brandmark">▦</div>
+  <div><h1>RAM Bank Interleaving Simulator</h1><p>Visualize · Compare · Understand</p></div>
+  <div class="course">Computer Organization &amp; Architecture (COA)<br><span>MCA Mini Project</span></div>
+</header>
+<main class="layout">
+<aside class="panel controls">
+  <h2>1. Configuration</h2>
+  <label>Number of Banks</label>
+  <div class="segmented" id="bankChoices"><button data-banks="2">2</button><button class="active" data-banks="4">4</button><button data-banks="8">8</button></div>
+  <label for="memorySize">Total Memory Size (addresses)</label>
+  <select id="memorySize"><option>64</option><option selected>256</option><option>512</option><option>1024</option></select>
+  <label for="latency">Memory Access Latency (cycles)</label><input id="latency" type="number" min="1" max="20" value="3">
+  <label for="recovery">Bank Recovery Time (cycles)</label><input id="recovery" type="number" min="0" max="20" value="1">
+  <label>Interleaving Type</label>
+  <div class="radio"><label><input type="radio" name="mapping" value="low" checked> Low-order (address % N)</label><label><input type="radio" name="mapping" value="high"> High-order (block interleaving)</label></div>
+  <h2>2. Access Mode</h2>
+  <div class="radio"><label><input type="radio" name="mode" value="sequential"> Sequential Access</label><label><input type="radio" name="mode" value="interleaved" checked> Interleaved Access</label></div>
+  <h2>3. Request Pattern</h2>
+  <label for="startAddress">Start Address</label><input id="startAddress" type="number" min="0" value="0">
+  <label for="requestCount">Number of Requests</label><input id="requestCount" type="number" min="1" max="64" value="16">
+  <button id="runBtn" class="primary">▶ Run Simulation</button><button id="resetBtn" class="secondary">↻ Reset</button>
+  <p class="hint">Low-order mapping: Bank = address % number of banks. Local address = floor(address / number of banks).</p>
+</aside>
+<section class="centercol">
+  <section class="panel mapping">
+    <div class="sectionhead"><h2>RAM Bank Mapping</h2><span id="mappingLabel">(Low-order interleaving)</span></div>
+    <div class="mappinggrid">
+      <div><table><thead><tr><th>Address</th><th>Bank</th><th>Local Address</th></tr></thead><tbody id="mappingRows"></tbody></table><small id="mappingNote">Pattern repeats across banks.</small></div>
+      <div class="diagram">
+        <div class="cpu">CPU /<br>Request Queue</div><div class="arrow">➜</div><div class="decoder">Address<br>Decoder</div><div class="branches" id="bankDiagram"></div>
+      </div>
+    </div>
+  </section>
+  <section class="panel timeline">
+    <div class="sectionhead"><h2>Memory Access Timeline</h2><span>(Cycle-wise)</span></div>
+    <div class="timelinewrap" id="timeline"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+  <section class="panel log">
+    <h2>Request Log</h2><div class="tablewrap"><table><thead><tr><th>#</th><th>Address</th><th>Bank</th><th>Local Address</th><th>Start Cycle</th><th>End Cycle</th><th>Status</th></tr></thead><tbody id="logRows"></tbody></table></div>
+  </section>
+</section>
+<aside class="rightcol">
+  <section class="panel performance"><h2>Performance Comparison</h2>
+    <div class="metrics">
+      <div class="metric"><span>Total Access Time</span><strong id="seqTime">--</strong><small>Sequential</small></div>
+      <div class="metric"><span>Total Access Time</span><strong id="intTime">--</strong><small>Interleaved</small></div>
+      <div class="metric"><span>Throughput (req/cycle)</span><strong id="seqThroughput">--</strong><small>Sequential</small></div>
+      <div class="metric"><span>Throughput (req/cycle)</span><strong id="intThroughput">--</strong><small>Interleaved</small></div>
+      <div class="metric"><span>Bank Utilization</span><strong id="seqUtil">--</strong><small>Sequential</small></div>
+      <div class="metric"><span>Bank Utilization</span><strong id="intUtil">--</strong><small>Interleaved</small></div>
+      <div class="metric wide"><span>Interleaving Speedup</span><strong id="speedup">--</strong></div>
+    </div>
+    <h3>Throughput Comparison</h3><canvas id="chart" width="480" height="190" aria-label="Throughput comparison chart"></canvas>
+  </section>
+  <section class="panel addresscheck"><h2>Address Mapping (Interactive)</h2><label for="checkAddress">Enter Address</label><div class="checkrow"><input id="checkAddress" type="number" min="0" value="9"><button id="checkBtn" class="primary">Check</button></div><div class="result" id="addressResult">Address 9 maps to...</div></section>
+  <section class="panel insights"><h2>💡 Key Insights</h2><ul id="insightsList"><li>Interleaving can overlap operations across independent banks.</li><li>It improves throughput for suitable access patterns.</li><li>It does not reduce the latency of a single access.</li></ul></section>
+</aside>
+</main>
+<footer>COA Mini Project · RAM organization and memory performance · Built with HTML, CSS and JavaScript</footer>
+<script src="script.js"></script>
+</body></html>
+
